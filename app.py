@@ -64,17 +64,17 @@ def main():
 
                 st.success("Prediction")
                 st.write("{}".format(prediction))
-                st.write("Confidence:{}".format(np.max(probability)))
+                st.write("Confidence:{:.2f}%".format(np.max(probability)*100)) # Change here to show percentage
 
             with col2:
                 st.success("Prediction Probability")
                 # st.write(probability)
                 proba_df = pd.DataFrame(probability, columns = model.classes_)
-                # st.write(proba_df.T)
                 proba_df_clean = proba_df.T.reset_index()
                 proba_df_clean.columns = ["emotions", "probability"]
+                proba_df_clean['probability'] = proba_df_clean['probability']*100 # Change here to show percentage
 
-                fig = alt.Chart(proba_df_clean).mark_bar().encode(x = 'emotions', y = 'probability', color = 'emotions')
+                fig = alt.Chart(proba_df_clean).mark_bar().encode(x = 'emotions', y = 'probability:Q', color = 'emotions')
                 st.altair_chart(fig,use_container_width = True)
 
     elif choice == "Monitor":
