@@ -46,9 +46,9 @@ def main():
             col1, col2  = st.columns(2)
 
             # Apply Function Here
-            if model_choice == "Model 1":
+            if model_choice == "Korean":
                 model = pipe_lr1
-            elif model_choice == "Model 2":
+            elif model_choice == "Japanese":
                 model = pipe_lr3
             else:
                 model = pipe_lr2 # Use the third model here
