@@ -9,10 +9,10 @@ import numpy as np
 from datetime import datetime
 
 # Load Models
-import joblib 
-pipe_lr1 = joblib.load(open("./models/japan_svm.pkl","rb"))
-pipe_lr2 = joblib.load(open("./models/korean_svm.pkl","rb"))
-pipe_lr3 = joblib.load(open("./models/emotion_classifier_pipe_lr.pkl","rb"))
+import joblib
+pipe_lr1 = joblib.load(open("./models/korean_svm.pkl","rb"))
+pipe_lr2 = joblib.load(open("./models/emotion_classifier_pipe_lr.pkl","rb"))
+pipe_lr3 = joblib.load(open("./models/japan_svm.pkl","rb")) # Add the third model here
 
 # Track Utils
 from track_utils import create_page_visited_table, add_page_visited_details, view_all_page_visited_details, add_prediction_details, view_all_prediction_details, create_emotionclf_table
@@ -39,19 +39,19 @@ def main():
 
         with st.form(key='emotion_clf_form'):
             raw_text = st.text_area("Type Here")
-            model_choice = st.selectbox("Select Model", ["Japanese", "Korean", "English/Tagalog/Spanish"])
+            model_choice = st.selectbox("Select Model", ["Korean", "Japanese", "English/Tagalog/Spanish"]) # Add the third model option here
             submit_text = st.form_submit_button(label = 'Submit')
 
         if submit_text:
             col1, col2  = st.columns(2)
 
             # Apply Function Here
-            if model_choice == "Japanese":
+            if model_choice == "Model 1":
                 model = pipe_lr1
-            elif model_choice == "Korean":
-                model = pipe_lr2
-            else:
+            elif model_choice == "Model 2":
                 model = pipe_lr3
+            else:
+                model = pipe_lr2 # Use the third model here
 
             prediction = predict_emotions(raw_text, model)
             probability = get_prediction_proba(raw_text, model)
@@ -77,30 +77,30 @@ def main():
                 fig = alt.Chart(proba_df_clean).mark_bar().encode(x = 'emotions', y = 'probability:Q', color = 'emotions')
                 st.altair_chart(fig,use_container_width = True)
 
-    elif choice == "Monitor":
+    elif choice =="Monitor":
         add_page_visited_details("Monitor", datetime.now())
         st.subheader("Monitor App")
 
         with st.expander("Page Metrics"):
             page_visited_details = pd.DataFrame(view_all_page_visited_details(), columns = ['Page Name', 'Time of Visit'])
-            st.dataframe(page_visited_details)  
+            st.dataframe(page_visited_details)
 
             pg_count = page_visited_details['Page Name'].value_counts().rename_axis('Page Name').reset_index(name = 'Counts')
             c = alt.Chart(pg_count).mark_bar().encode(x = 'Page Name', y = 'Counts', color = 'Page Name')
-            st.altair_chart(c,use_container_width = True)   
+            st.altair_chart(c,use_container_width = True)
 
         with st.expander('Emotion Classifier Metrics'):
             df_emotions = pd.DataFrame(view_all_prediction_details(), columns = ['Rawtext', 'Prediction', 'Probability', 'Time_of_Visit'])
-            st.dataframe(df_emotions)
+            st.write(df_emotions)
 
             prediction_count = df_emotions['Prediction'].value_counts().rename_axis('Prediction').reset_index(name = 'Counts')
             pc = alt.Chart(prediction_count).mark_bar().encode(x = 'Prediction', y = 'Counts', color = 'Prediction')
-            st.altair_chart(pc, use_container_width = True) 
+            st.altair_chart(pc, use_container_width = True)
 
     else:
         add_page_visited_details("About", datetime.now())
 
-        st.write("Welcome to the Emotion Detection in Text App! This application utilizes the power of natural language processing and machine learning to analyze and identify emotions in textual data.")
+        st.write("Welcometo the Emotion Detection in Text App! This application utilizes the power of natural language processing and machine learning to analyze and identify emotions in textual data.")
         
         st.subheader("Our Mission")
 
